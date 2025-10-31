@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: servicedesk-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_URL=http://localhost:5000
+
+  backend:
+    build: ./backend
+    container_name: servicedesk-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - MONGO_URI=mongodb://servicedesk-mongo:27017/ServiceDeskAI
+      - JWT_SECRET=supersecreto123
+    depends_on:
+      - mongodb
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm start
+
+  mongodb:
+    image: mongo:7
+    container_name: servicedesk-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: servicedesk
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+    name: servicedesk_mongo_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./mongo-data

@@ -3,16 +3,25 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
+import officeRoutes from "./routes/officeRoutes.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 
 // Middleware esenciales
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/api/offices", officeRoutes);
+
 // Conexión a MongoDB
-mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/mydb")
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB conectado"))
   .catch(err => console.error("❌ Error conectando a MongoDB:", err));
 

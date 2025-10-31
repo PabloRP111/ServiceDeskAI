@@ -15,10 +15,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  office: {
+  role: { 
     type: String,
-    required: false,
-  }
+      enum: ["admin", "agent", "user"],
+      default: "user" },
+  office: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Office" }
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);
